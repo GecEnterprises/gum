@@ -13,7 +13,6 @@ fn boot(boot_config: &BootConfig) -> Result<(), Box<dyn Error>> {
     if !dir.exists() {
         fs::create_dir_all(dir)?;
     } else {
-        // Check if the directory is empty
         if !dir.read_dir()?.next().is_none() {
             return Err(Box::new(io::Error::new(
                 io::ErrorKind::AlreadyExists,

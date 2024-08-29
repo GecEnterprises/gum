@@ -1,0 +1,5 @@
+[workspace]
+
+members = [
+    "gum-cli"
+, "gum-core"]
