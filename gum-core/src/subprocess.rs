@@ -7,14 +7,16 @@ use tokio::io::AsyncReadExt;
 
 pub struct Subprocess {
     command: Command,
-    timeout: Option<Duration>
+    timeout: Option<Duration>,
+    working_dir: Option<String>
 }
 
 impl Subprocess {
     pub fn new(command: &str) -> Self {
         Self {
             command: Command::new(command),
-            timeout: None
+            timeout: None,
+            working_dir: None
         }
     }
 
@@ -23,7 +25,21 @@ impl Subprocess {
         self
     }
 
+    pub fn arg(mut self, arg: &str) -> Self {
+        self.command.arg(arg);
+        self
+    }
+
+    pub fn working_dir(mut self, dir: &str) -> Self {
+        self.working_dir = Some(dir.to_string());
+        self
+    }
+
     pub async fn run(&mut self) -> Result<(String, String)> {
+        if let Some(ref dir) = self.working_dir {
+            self.command.current_dir(dir);
+        }
+
         self.command.stdout(Stdio::piped());
         self.command.stderr(Stdio::piped());
 
