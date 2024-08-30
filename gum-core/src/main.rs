@@ -1,5 +1,4 @@
 mod subprocess;
-mod gumdef;
 
 use std::time::Duration;
 use crate::subprocess::Subprocess;
