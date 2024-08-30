@@ -1,6 +1,5 @@
 mod subprocess;
 mod bootstrap;
-mod r#loop;
 
 use std::time::Duration;
 use anyhow::{Context, Result};

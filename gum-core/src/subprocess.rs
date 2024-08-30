@@ -2,7 +2,6 @@ use tokio::time::{Duration};
 use tokio::process::{Command};
 use anyhow::{anyhow, Context, Result};
 use tokio::io::{BufReader, AsyncBufReadExt};
-use std::io::{prelude::*};
 use std::process::{ExitStatus, Stdio};
 
 pub struct Subprocess {
@@ -40,7 +39,6 @@ impl Subprocess {
         self.working_dir = Some(dir.to_string());
         self
     }
-
 
     pub async fn run(&mut self) -> Result<SubprocessResult> {
         if let Some(ref dir) = self.working_dir {
