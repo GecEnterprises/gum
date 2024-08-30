@@ -8,7 +8,7 @@ use tokio::io::AsyncReadExt;
 pub struct Subprocess {
     command: Command,
     timeout: Option<Duration>,
-    working_dir: Option<String>
+    working_dir: Option<String>,
 }
 
 impl Subprocess {
@@ -16,7 +16,7 @@ impl Subprocess {
         Self {
             command: Command::new(command),
             timeout: None,
-            working_dir: None
+            working_dir: None,
         }
     }
 

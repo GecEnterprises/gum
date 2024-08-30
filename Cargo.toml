@@ -2,4 +2,4 @@
 
 members = [
     "gum-cli"
-, "gum-core", "gum-ffi-ts"]
+, "gum-core", "gum-ffi-ts", "gum-wiki"]
