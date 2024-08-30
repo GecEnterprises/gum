@@ -1,32 +1,17 @@
 mod subprocess;
+mod bootstrap;
+mod r#loop;
 
 use std::time::Duration;
-use crate::subprocess::Subprocess;
 use anyhow::{Context, Result};
 use tempfile::TempDir;
+use crate::bootstrap::Bootstrapper;
 
 #[tokio::main]
 async fn main() -> Result<()> {
     let temp_dir = TempDir::new().expect("Failed to create temp dir");
 
-    println!("{}", temp_dir.path().to_str().unwrap());
-
-    let mut subprocess = Subprocess::new("deno")
-        .arg("init")
-        .arg("gumland")
-        .working_dir(temp_dir.path().to_str().unwrap())
-        .timeout(Duration::from_secs(5));
-
-    match subprocess.run().await {
-        Ok((stdout, stderr)) => {
-            println!("Command completed successfully within 5 seconds.");
-            println!("STDOUT: {} <- end of stdout", stdout);
-            println!("STDERR: {} <- end of stderr", stderr);
-        }
-        Err(e) => {
-            println!("Command failed or timed out: {}", e);
-        }
-    }
+    Bootstrapper::new(temp_dir.path()).strap().await?;
 
     tokio::time::sleep(Duration::from_secs(60 * 10)).await;
 

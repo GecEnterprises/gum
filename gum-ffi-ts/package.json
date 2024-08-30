@@ -1,5 +1,5 @@
 {
-  "name": "gum-ffi-ts",
+  "name": "gum-ffi",
   "version": "0.0.0",
   "main": "index.js",
   "types": "index.d.ts",
