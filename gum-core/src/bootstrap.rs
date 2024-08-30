@@ -36,16 +36,16 @@ impl Bootstrapper{
             .working_dir(self.working_dir.to_str().unwrap())
             .timeout(Duration::from_secs(5));
 
-        match subprocess.run().await {
-            Ok((stdout, stderr)) => {
-                println!("Command completed successfully within 5 seconds.");
-                println!("STDOUT: {} <- end of stdout", stdout);
-                println!("STDERR: {} <- end of stderr", stderr);
-            }
-            Err(e) => {
-                println!("Command failed or timed out: {}", e);
-            }
-        }
+        // match subprocess.run().await {
+        //     Ok((stdout, stderr)) => {
+        //         println!("Command completed successfully within 5 seconds.");
+        //         println!("STDOUT: {} <- end of stdout", stdout);
+        //         println!("STDERR: {} <- end of stderr", stderr);
+        //     }
+        //     Err(e) => {
+        //         println!("Command failed or timed out: {}", e);
+        //     }
+        // }
 
         Ok(())
     }
