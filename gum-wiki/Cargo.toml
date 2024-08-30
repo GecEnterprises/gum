@@ -10,8 +10,6 @@ mdbook-mermaid = "0.13.0" # Use the latest version if available
 [build-dependencies]
 mdbook = "0.4"
 
-[workspace]
-
 [package.metadata.scripts]
 build = "mdbook build"
 serve = "mdbook serve"
