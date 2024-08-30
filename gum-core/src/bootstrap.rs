@@ -1,12 +1,14 @@
 use std::collections::HashSet;
+use std::fs;
 use std::path::Path;
 use std::time::Duration;
 use anyhow::{Result};
+use crate::looprunner::{Runnable, RunnableType, Runner, RunnerMode};
 use crate::subprocess::Subprocess;
 
 pub struct Bootstrapper {
     working_dir: Box<Path>,
-    flags: HashSet<BootstrapperFlag>
+    flags: HashSet<BootstrapperFlag>,
 }
 
 #[derive(Hash, Eq, PartialEq)]
@@ -18,7 +20,23 @@ impl Bootstrapper {
     pub fn new<P: AsRef<Path>>(working_dir: P) -> Self {
         Self {
             working_dir: working_dir.as_ref().to_path_buf().into_boxed_path(),
-            flags: HashSet::new()
+            flags: HashSet::new(),
+        }
+    }
+
+    pub fn new_from_named(strpath: &str) -> Self {
+        let working_dir = if strpath == "." {
+            std::env::current_dir().expect("Failed to get current directory")
+        } else {
+            let mut path = std::env::current_dir().expect("Failed to get current directory");
+            path.push(strpath);
+            fs::create_dir_all(&path).expect("Failed to create directory");
+            path
+        };
+
+        Self {
+            working_dir: working_dir.into_boxed_path(),
+            flags: HashSet::new(),
         }
     }
 
@@ -28,24 +46,20 @@ impl Bootstrapper {
     }
 }
 
-impl Bootstrapper{
+impl Bootstrapper {
     pub async fn strap(mut self) -> Result<()> {
         let mut subprocess = Subprocess::new("deno")
             .arg("init")
-            .arg("gumland")
-            .working_dir(self.working_dir.to_str().unwrap())
+            .arg(".")
             .timeout(Duration::from_secs(5));
 
-        // match subprocess.run().await {
-        //     Ok((stdout, stderr)) => {
-        //         println!("Command completed successfully within 5 seconds.");
-        //         println!("STDOUT: {} <- end of stdout", stdout);
-        //         println!("STDERR: {} <- end of stderr", stderr);
-        //     }
-        //     Err(e) => {
-        //         println!("Command failed or timed out: {}", e);
-        //     }
-        // }
+        Runner::new(RunnerMode::Oneshot, self.working_dir.to_str().unwrap().to_string())
+            .add_runnable(Runnable {
+                command: subprocess,
+                runnable_type: RunnableType::Chained,
+            })
+            .run()
+            .await?;
 
         Ok(())
     }

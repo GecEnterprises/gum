@@ -604,8 +604,11 @@ dependencies = [
 name = "gum-cli"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "clap",
+ "gum-core",
  "tempfile",
+ "tokio",
 ]
 
 [[package]]

@@ -27,12 +27,14 @@ impl Runner {
         }
     }
 
-    pub fn add_runnable(&mut self, runnable: Runnable) {
+    pub fn add_runnable(&mut self, runnable: Runnable) -> &mut Self {
         self.chain.push(runnable);
+        self
     }
 
-    pub fn set_mode(&mut self, mode: RunnerMode) {
+    pub fn set_mode(&mut self, mode: RunnerMode) -> &mut Self {
         self.mode = mode;
+        self
     }
 
     pub async fn run(&mut self) -> Result<()> {
@@ -45,7 +47,8 @@ impl Runner {
                         continue;
                     }
 
-                    let ok = runnable.command.run().await;
+                    // Use borrowing to set the working directory
+                    let ok = runnable.command.working_dir(&self.working_dir).run().await;
 
                     if !ok?.status.success() && runnable.runnable_type == RunnableType::Chained {
                         failing = true;
@@ -66,8 +69,8 @@ impl Runner {
 }
 
 pub struct Runnable {
-    command: Subprocess,
-    runnable_type: RunnableType,
+    pub(crate) command: Subprocess,
+    pub(crate) runnable_type: RunnableType,
 }
 
 #[derive(Eq, PartialEq, Debug)]
@@ -124,8 +127,8 @@ mod runner_tests {
         let subprocess2 = Subprocess::new("echo").arg("Second Command");
         let runnable2 = Runnable { command: subprocess2, runnable_type: RunnableType::Chained };
 
-        runner.add_runnable(runnable1);
-        runner.add_runnable(runnable2);
+        runner.add_runnable(runnable1)
+            .add_runnable(runnable2);
 
         assert!(runner.run().await.is_ok());
 
@@ -142,8 +145,8 @@ mod runner_tests {
         let subprocess2 = Subprocess::new("echo").arg("This should not run");
         let runnable2 = Runnable { command: subprocess2, runnable_type: RunnableType::Chained };
 
-        runner.add_runnable(runnable1);
-        runner.add_runnable(runnable2);
+        runner.add_runnable(runnable1)
+            .add_runnable(runnable2);
 
         assert!(runner.run().await.is_err());
 
@@ -161,8 +164,8 @@ mod runner_tests {
         let subprocess2 = Subprocess::new("echo").arg("This should still run");
         let runnable2 = Runnable { command: subprocess2, runnable_type: RunnableType::Always };
 
-        runner.add_runnable(runnable1);
-        runner.add_runnable(runnable2);
+        runner.add_runnable(runnable1)
+            .add_runnable(runnable2);
 
         // TODO Add checks that subprocess2 actually ran
         assert!(runner.run().await.is_err());
