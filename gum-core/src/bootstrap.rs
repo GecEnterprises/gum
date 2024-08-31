@@ -47,8 +47,8 @@ impl Bootstrapper {
 }
 
 impl Bootstrapper {
-    pub async fn strap(mut self) -> Result<()> {
-        let mut subprocess = Subprocess::new("deno")
+    pub async fn strap(self) -> Result<()> {
+        let subprocess = Subprocess::new("deno")
             .arg("init")
             .arg(".")
             .timeout(Duration::from_secs(5));

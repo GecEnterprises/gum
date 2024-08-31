@@ -4,8 +4,11 @@ use anyhow::{anyhow, Context, Result};
 use tokio::io::{BufReader, AsyncBufReadExt};
 use std::process::{ExitStatus, Stdio};
 
+
+#[derive(Clone)]
 pub struct Subprocess {
-    command: Command,
+    command: String,
+    args: Vec<String>,
     timeout: Option<Duration>,
     working_dir: Option<String>,
 }
@@ -19,7 +22,8 @@ pub struct SubprocessResult {
 impl Subprocess {
     pub fn new(command: &str) -> Self {
         Self {
-            command: Command::new(command),
+            command: command.to_string(),
+            args: Vec::new(),
             timeout: None,
             working_dir: None,
         }
@@ -31,7 +35,7 @@ impl Subprocess {
     }
 
     pub fn arg(mut self, arg: &str) -> Self {
-        self.command.arg(arg);
+        self.args.push(arg.to_string());
         self
     }
 
@@ -41,12 +45,31 @@ impl Subprocess {
     }
 
     pub async fn run(&mut self) -> Result<SubprocessResult> {
-        if let Some(ref dir) = self.working_dir {
-            self.command.current_dir(dir);
+        let command = match cfg!(target_os = "windows") {
+            true => "cmd".to_string(),
+            false => "/bin/sh".to_string(),
+        };
+
+        let mut command = Command::new(command);
+
+        if cfg!(target_os = "windows") {
+            command.arg("/C");
+        } else {
+            command.arg("-c");
         }
-        self.command.stdout(Stdio::piped());
-        self.command.stderr(Stdio::piped());
-        let mut child = self.command
+
+        command.arg(&self.command);
+
+        for arg in &self.args {
+            command.arg(arg);
+        }
+
+        if let Some(ref dir) = self.working_dir {
+            command.current_dir(dir);
+        }
+        command.stdout(Stdio::piped());
+        command.stderr(Stdio::piped());
+        let mut child = command
             .spawn()
             .map_err(|_| anyhow!("Program {:?} not found", self.command))
             .context("Failed spawning process")?;

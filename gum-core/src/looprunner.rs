@@ -47,8 +47,12 @@ impl Runner {
                         continue;
                     }
 
-                    // Use borrowing to set the working directory
-                    let ok = runnable.command.working_dir(&self.working_dir).run().await;
+                    let ok = runnable.command.clone().working_dir(&self.working_dir).run().await;
+
+                    if ok.is_err() {
+                        failing = true;
+                        continue
+                    }
 
                     if !ok?.status.success() && runnable.runnable_type == RunnableType::Chained {
                         failing = true;
@@ -68,12 +72,13 @@ impl Runner {
     }
 }
 
+#[derive(Clone)]
 pub struct Runnable {
     pub(crate) command: Subprocess,
     pub(crate) runnable_type: RunnableType,
 }
 
-#[derive(Eq, PartialEq, Debug)]
+#[derive(Eq, PartialEq, Debug, Clone)]
 pub enum RunnableType {
     /// Represents a runnable operation that will only run if the previous operation in the chain
     /// was successful.
@@ -88,19 +93,22 @@ pub enum RunnableType {
 #[cfg(test)]
 mod runner_tests {
     use super::*;
+    use tempfile::TempDir;
 
     #[tokio::test]
     async fn test_runner_initialization() {
-        let runner = Runner::new(RunnerMode::Oneshot, "/tmp".to_string());
+        let temp_dir = TempDir::new().expect("Failed to create temp dir");
+        let runner = Runner::new(RunnerMode::Oneshot, temp_dir.path().to_str().unwrap().to_string());
 
         assert_eq!(runner.mode, RunnerMode::Oneshot);
-        assert_eq!(runner.working_dir, "/tmp".to_string());
+        assert_eq!(runner.working_dir, temp_dir.path().to_str().unwrap().to_string());
         assert!(runner.chain.is_empty());
     }
 
     #[tokio::test]
     async fn test_adding_runnables() {
-        let mut runner = Runner::new(RunnerMode::Oneshot, "/tmp".to_string());
+        let temp_dir = TempDir::new().expect("Failed to create temp dir");
+        let mut runner = Runner::new(RunnerMode::Oneshot, temp_dir.path().to_str().unwrap().to_string());
 
         let subprocess = Subprocess::new("echo").arg("Hello, World!");
         let runnable = Runnable { command: subprocess, runnable_type: RunnableType::Always };
@@ -111,7 +119,8 @@ mod runner_tests {
 
     #[tokio::test]
     async fn test_changing_runner_mode() {
-        let mut runner = Runner::new(RunnerMode::Oneshot, "/tmp".to_string());
+        let temp_dir = TempDir::new().expect("Failed to create temp dir");
+        let mut runner = Runner::new(RunnerMode::Oneshot, temp_dir.path().to_str().unwrap().to_string());
 
         runner.set_mode(RunnerMode::FSWatchLoop);
         assert_eq!(runner.mode, RunnerMode::FSWatchLoop);
@@ -119,7 +128,8 @@ mod runner_tests {
 
     #[tokio::test]
     async fn test_runner_oneshot_mode_success() -> Result<()> {
-        let mut runner = Runner::new(RunnerMode::Oneshot, "/tmp".to_string());
+        let temp_dir = TempDir::new().expect("Failed to create temp dir");
+        let mut runner = Runner::new(RunnerMode::Oneshot, temp_dir.path().to_str().unwrap().to_string());
 
         let subprocess1 = Subprocess::new("echo").arg("First Command");
         let runnable1 = Runnable { command: subprocess1, runnable_type: RunnableType::Chained };
@@ -137,7 +147,8 @@ mod runner_tests {
 
     #[tokio::test]
     async fn test_runner_oneshot_mode_failure() -> Result<()> {
-        let mut runner = Runner::new(RunnerMode::Oneshot, "/tmp".to_string());
+        let temp_dir = TempDir::new().expect("Failed to create temp dir");
+        let mut runner = Runner::new(RunnerMode::Oneshot, temp_dir.path().to_str().unwrap().to_string());
 
         let subprocess1 = Subprocess::new("false"); // This command will fail
         let runnable1 = Runnable { command: subprocess1, runnable_type: RunnableType::Chained };
@@ -155,8 +166,10 @@ mod runner_tests {
 
     #[tokio::test]
     async fn test_runner_oneshot_mode_always_runs() -> Result<()> {
+        let temp_dir = TempDir::new().expect("Failed to create temp dir");
+
         // TODO use tmp directory library
-        let mut runner = Runner::new(RunnerMode::Oneshot, "/tmp".to_string());
+        let mut runner = Runner::new(RunnerMode::Oneshot, temp_dir.path().to_str().unwrap().to_string());
 
         let subprocess1 = Subprocess::new("false"); // This command will fail
         let runnable1 = Runnable { command: subprocess1, runnable_type: RunnableType::Chained };
