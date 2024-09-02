@@ -1,7 +1,7 @@
 {
-  "name": "gum-code-plugin",
-  "displayName": "gum-code-plugin",
-  "description": "VSCode Plugin for gum",
+  "name": "gum-code-ext",
+  "displayName": "gum-code-ext",
+  "description": "VSCode Extension for gum",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.92.0"

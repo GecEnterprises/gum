@@ -1,16 +1,15 @@
-// extension.ts
 import * as vscode from "vscode";
 import { GumEditorProvider } from "./editor";
 
 export function activate(context: vscode.ExtensionContext) {
   console.log(
-    'Congratulations, your extension "gum-code-plugin" is now active!'
+    'Congratulations, your extension "gum-code-ext" is now active!'
   );
 
   const disposable = vscode.commands.registerCommand(
-    "gum-code-plugin.helloWorld",
+    "gum-code-ext.helloWorld",
     () => {
-      vscode.window.showInformationMessage("Hello World from gum-code-plugin!");
+      vscode.window.showInformationMessage("Hello World from gum-code-ext!");
     }
   );
 
