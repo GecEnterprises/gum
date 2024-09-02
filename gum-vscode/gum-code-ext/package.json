@@ -25,7 +25,7 @@
     ],
     "customEditors": [
       {
-        "viewType": "gum-code-plugin.gumEditor",
+        "viewType": "gum-code-ext.gumEditor",
         "displayName": "Gum Editor",
         "selector": [
           {
@@ -36,7 +36,7 @@
     ],
     "commands": [
       {
-        "command": "gum-code-plugin.helloWorld",
+        "command": "gum-code-ext.helloWorld",
         "title": "Hello World"
       }
     ],

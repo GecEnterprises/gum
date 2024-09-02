@@ -10,11 +10,17 @@
     "watch": "vite build --watch --outDir ../gum-code-ext/media/dist"
   },
   "dependencies": {
-    "@types/vscode": "^1.92.0",
-    "preact": "^10.23.1"
+    "preact": "^10.23.1",
+    "rete": "^2.0.5",
+    "rete-area-plugin": "^2.1.1",
+    "rete-connection-plugin": "^2.0.5",
+    "rete-react-plugin": "^2.0.7",
+    "rete-render-utils": "^2.0.3",
+    "styled-components": "^6.1.13"
   },
   "devDependencies": {
     "@preact/preset-vite": "^2.9.0",
+    "sass-embedded": "^1.77.8",
     "typescript": "^5.5.3",
     "vite": "^5.4.1"
   }

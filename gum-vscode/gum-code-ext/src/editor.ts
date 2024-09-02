@@ -24,6 +24,13 @@ export class GumEditorProvider implements vscode.CustomTextEditorProvider {
       document
     );
 
+    setInterval(() => {
+      webviewPanel.webview.postMessage({
+        type: "error",
+        error: Date.now(),
+      });
+    }, 10);
+
     // Listen for messages from the webview
     webviewPanel.webview.onDidReceiveMessage((message) => {
       switch (message.command) {
@@ -68,18 +75,10 @@ export class GumEditorProvider implements vscode.CustomTextEditorProvider {
       vscode.Uri.joinPath(
         this.context.extensionUri,
         "media",
-        "assets",
+        "dist",
         "index.js"
       )
     );
-    // const styleUri = webview.asWebviewUri(
-    //   vscode.Uri.joinPath(
-    //     this.context.extensionUri,
-    //     "media",
-    //     "assets",
-    //     "index.css"
-    //   )
-    // );
 
     // Get the text content of the document
     const content = document.getText();
@@ -91,16 +90,22 @@ export class GumEditorProvider implements vscode.CustomTextEditorProvider {
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Gum Editor</title>
+        <link href="${webview.asWebviewUri(
+          vscode.Uri.joinPath(
+            this.context.extensionUri,
+            "media",
+            "dist",
+            "index.css"
+          )
+        )}" rel="stylesheet">
       </head>
       <body>
-      <h1>${scriptUri}</h1>
-        <div id="root"></div>
         <div id="app"></div>
+        <script type="module" crossorigin src="${scriptUri}"></script>
         <script>
           const vscode = acquireVsCodeApi();
           window.initialData = ${JSON.stringify(content)};
         </script>
-        <script type="module" src="${scriptUri}"></script>
       </body>
       </html>
     `;
