@@ -1,0 +1,15 @@
+{
+  "private": true,
+  "workspaces": [
+    "gum-code-ext",
+    "gum-code-ext-webview"
+  ],
+  "name": "gum-vscode",
+  "version": "1.0.0",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "scripts": {
+    "watch": "concurrently \"yarn workspace gum-code-ext watch\" \"yarn workspace gum-code-ext-webview watch\""
+  }
+}

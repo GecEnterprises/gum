@@ -5,8 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
-    "preview": "vite preview"
+    "build": "tsc -b && vite build --outDir ../gum-code-ext/media/dist",
+    "preview": "vite preview",
+    "watch": "vite build --watch --outDir ../gum-code-ext/media/dist"
   },
   "dependencies": {
     "@types/vscode": "^1.92.0",
