@@ -1,0 +1,29 @@
+# Node.js modules
+node_modules/
+.vscode-test/
+
+# Output directories
+out/
+dist/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Mac system files
+.DS_Store
+
+# VSCode files
+.vscode/
+*.code-workspace
+
+# Temporary files
+*.tmp
+*.temp
+
+# TypeScript
+*.tsbuildinfo
+
+# Coverage directory used by tools like istanbul
+coverage/
