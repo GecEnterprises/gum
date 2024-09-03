@@ -23,6 +23,13 @@
         ]
       }
     ],
+    "iconThemes": [
+      {
+        "id": "gum-file-icons",
+        "label": "Gum File Icons",
+        "path": "./gum-icon-theme.json"
+      }
+    ],
     "customEditors": [
       {
         "viewType": "gum-code-ext.gumEditor",

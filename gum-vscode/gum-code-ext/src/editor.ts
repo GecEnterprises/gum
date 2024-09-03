@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import { messagor } from "./messaging";
 
 export class GumEditorProvider implements vscode.CustomTextEditorProvider {
   public static register(context: vscode.ExtensionContext): vscode.Disposable {
@@ -12,7 +13,7 @@ export class GumEditorProvider implements vscode.CustomTextEditorProvider {
 
   constructor(private readonly context: vscode.ExtensionContext) {}
 
-  public async resolveCustomTextEditor(
+  public async resolveCustomTextEditor( 
     document: vscode.TextDocument,
     webviewPanel: vscode.WebviewPanel,
     _token: vscode.CancellationToken
@@ -24,12 +25,12 @@ export class GumEditorProvider implements vscode.CustomTextEditorProvider {
       document
     );
 
-    setInterval(() => {
-      webviewPanel.webview.postMessage({
-        type: "error",
-        error: Date.now(),
-      });
-    }, 10);
+    messagor.addListener("editor", e => {
+        webviewPanel.webview.postMessage({
+          type: "error",
+          error: e.message,
+        });
+    })
 
     // Listen for messages from the webview
     webviewPanel.webview.onDidReceiveMessage((message) => {

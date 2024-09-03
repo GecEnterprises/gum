@@ -1,0 +1,17 @@
+{
+    "iconDefinitions": {
+      "gum-file-icon": {
+        "iconPath": "./media/assets/icon_gum.png"
+      }
+    },
+    "fileExtensions": {
+      "gum": "gum-file-icon"
+    },
+    "fileNames": {
+      "file.gum": "gum-file-icon"
+    },
+    "languageIds": {
+      "gum": "gum-file-icon"
+    }
+  }
+  
