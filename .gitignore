@@ -5,3 +5,4 @@ target/**
 
 test-gum
 test-gum/**
+node_modules/**

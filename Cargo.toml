@@ -1,3 +1,0 @@
-[workspace]
-
-members = ["gum-cli", "gum-core", "gum-wiki"]
